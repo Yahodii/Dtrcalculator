@@ -2,120 +2,27 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Timesheet Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<title>Timesheet with Username Login</title>
 <style>
-body {
-    font-family: 'Roboto', sans-serif;
-    background: #f4f6f9;
-    padding: 20px;
-}
-.container {
-    max-width: 1000px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-h2 { text-align: center; margin-bottom: 20px; }
-.summary {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-.card {
-    flex: 1;
-    min-width: 200px;
-    background: #f9fafc;
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
-    border: 1px solid #ddd;
-    transition: transform 0.2s ease;
-}
-.card:hover { transform: translateY(-3px); }
-.card input {
-    width: 80px;
-    padding: 5px;
-    font-size: 16px;
-    text-align: center;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-.big {
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: 5px;
-    transition: color 0.3s;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-th {
-    background: #ffd966;
-}
-th, td {
-    padding: 8px;
-    text-align: center;
-    border: 1px solid #ddd;
-}
-table tbody tr:nth-child(even){ background:#f9f9f9; }
-table tbody tr:hover { background: #eaf0f6; }
-.total-cell{ font-weight:bold; background:#fff4cc; transition: all 0.3s; }
-button {
-    margin-top: 15px;
-    padding: 8px 15px;
-    border: none;
-    background: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-button:hover { background: #45a049; transform: scale(1.05); }
-.logout-btn { background: #f44336; margin-left: 10px; }
-.logout-btn:hover { background: #d32f2f; }
-input.time-input { width: 70px; padding: 4px; text-align: center; border-radius:5px; border:1px solid #ccc; }
-#loginModal{
-    position: fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background: rgba(0,0,0,0.6);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-#loginModalContent{
-    background:white;
-    padding: 30px;
-    border-radius:10px;
-    text-align:center;
-    width:300px;
-    animation: fadeIn 0.5s ease;
-}
-#loginModalContent input{
-    display:block;
-    margin:10px auto;
-    padding:8px;
-    width: 80%;
-    border-radius:5px;
-    border:1px solid #ccc;
-}
-#loginMsg{color:red; font-size:14px; min-height:18px;}
-@keyframes fadeIn { from {opacity:0; transform: translateY(-20px);} to {opacity:1; transform: translateY(0);} }
-@media(max-width:768px){
-    .summary{flex-direction:column;}
-    .card{min-width:100%;}
-    table{font-size:14px;}
-}
+body { font-family: Arial; background:#f4f6f9; padding:20px; }
+.container { max-width:1000px; margin:auto; background:white; padding:20px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+h2{text-align:center;}
+.summary{display:flex; justify-content:space-between; flex-wrap:wrap; gap:15px; margin-bottom:20px;}
+.card{flex:1; min-width:200px; background:#f9fafc; padding:15px; border-radius:8px; text-align:center; border:1px solid #ddd;}
+.card input{width:80px; padding:5px; font-size:16px; text-align:center;}
+.big{font-size:20px; font-weight:bold; margin-top:5px;}
+table{width:100%; border-collapse:collapse;}
+th{background:#ffd966;}
+th,td{padding:8px; text-align:center; border:1px solid #ddd;}
+.total-cell{font-weight:bold; background:#fff4cc;}
+button{margin-top:15px; padding:8px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer;}
+button:hover{background:#45a049;}
+input.time-input{width:70px; padding:4px; text-align:center;}
+#loginModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;}
+#loginModalContent{background:white;padding:30px;border-radius:10px;text-align:center;}
+#loginModalContent input{display:block;margin:10px auto;padding:8px;width:80%;}
+.logout-btn{background:#f44336;margin-left:10px;}
+.logout-btn:hover{background:#d32f2f;}
 </style>
 </head>
 <body>
@@ -178,49 +85,20 @@ input.time-input { width: 70px; padding: 4px; text-align: center; border-radius:
 // Timesheet functions
 function timeToMinutes(time){ if(!time) return 0; const [h,m]=time.split(":").map(Number); return isNaN(h)||isNaN(m)?0:h*60+m;}
 function minutesToTime(mins){ const h=Math.floor(mins/60); const m=mins%60; return `${h}:${m.toString().padStart(2,'0')}`;}
-function calculateRow(row){
-    const inputs=row.querySelectorAll(".time-input");
-    const totalCell=row.querySelector(".total-cell");
-    let total=0;
-    const morning=timeToMinutes(inputs[1].value)-timeToMinutes(inputs[0].value);
-    const afternoon=timeToMinutes(inputs[3].value)-timeToMinutes(inputs[2].value);
-    if(morning>0) total+=morning;
-    if(afternoon>0) total+=afternoon;
-    totalCell.textContent=minutesToTime(total);
-    updateSummary();
-}
-function updateSummary(){
-    let grandTotal=0;
-    document.querySelectorAll(".total-cell").forEach(c=>{
-        const [h,m]=c.textContent.split(":").map(Number);
-        grandTotal+=h*60+m;
-    });
-    const target=parseFloat(document.getElementById("targetHours").value) || 0;
-    const targetMinutes = target*60;
-    const remaining = targetMinutes - grandTotal;
-    const remEl = document.getElementById("remainingHours");
-    remEl.textContent = minutesToTime(remaining);
-    remEl.style.color = remaining<0 ? 'red':'green';
-}
-function addRow(data={}){ 
-    const tableBody=document.getElementById("tableBody"); 
-    const row=document.createElement("tr"); 
-    row.innerHTML=`
-        <td><input type="date" value="${data.date||''}"></td>
-        <td><input type="time" class="time-input" value="${data.morningIn||''}"></td>
-        <td><input type="time" class="time-input" value="${data.morningOut||''}"></td>
-        <td><input type="time" class="time-input" value="${data.afternoonIn||''}"></td>
-        <td><input type="time" class="time-input" value="${data.afternoonOut||''}"></td>
-        <td class="total-cell">0:00</td>`;
-    row.querySelectorAll(".time-input").forEach(input=>{
-        input.addEventListener("input",()=>calculateRow(row));
-    });
-    tableBody.appendChild(row); 
-    calculateRow(row);
-}
+function calculateRow(row){ const inputs=row.querySelectorAll(".time-input"); const totalCell=row.querySelector(".total-cell"); let total=0; const morning=timeToMinutes(inputs[1].value)-timeToMinutes(inputs[0].value); const afternoon=timeToMinutes(inputs[3].value)-timeToMinutes(inputs[2].value); if(morning>0) total+=morning; if(afternoon>0) total+=afternoon; totalCell.textContent=minutesToTime(total); updateSummary();}
+function updateSummary(){ let grandTotal=0; document.querySelectorAll(".total-cell").forEach(c=>{ const [h,m]=c.textContent.split(":").map(Number); grandTotal+=h*60+m;}); const target=parseFloat(document.getElementById("targetHours").value) || 0; const targetMinutes = target*60; document.getElementById("totalHours").textContent=minutesToTime(grandTotal); document.getElementById("remainingHours").textContent=minutesToTime(targetMinutes-grandTotal);}
+function addRow(data={}){ const tableBody=document.getElementById("tableBody"); const row=document.createElement("tr"); row.innerHTML=`<td><input type="date" value="${data.date||''}"></td>
+<td><input type="time" class="time-input" value="${data.morningIn||''}"></td>
+<td><input type="time" class="time-input" value="${data.morningOut||''}"></td>
+<td><input type="time" class="time-input" value="${data.afternoonIn||''}"></td>
+<td><input type="time" class="time-input" value="${data.afternoonOut||''}"></td>
+<td class="total-cell">0:00</td>`; row.querySelectorAll(".time-input").forEach(input=>{input.addEventListener("input",()=>calculateRow(row));}); tableBody.appendChild(row); calculateRow(row);}
 addRow();
+
+// Make target hours input update remaining hours immediately
 document.getElementById("targetHours").addEventListener("input", updateSummary);
 
+// Logout function
 function logout(){
     currentUser=null;
     document.getElementById("loginModal").style.display="flex";
@@ -230,7 +108,7 @@ function logout(){
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, setDoc, addDoc, query, orderBy, limit, getDocs } 
+import { getFirestore, collection, addDoc, getDocs, doc, getdoc, query, orderBy, limit, setDoc } 
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -251,11 +129,13 @@ window.register = async function(){
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;
     const msg = document.getElementById("loginMsg");
-    if(!username || !password){ msg.textContent = "Enter username & password"; return; }
-    const userRef = doc(db,"users",username);
-    const userSnap = await getDoc(userRef);
-    if(userSnap.exists()){ msg.textContent="Username exists!"; return; }
-    await setDoc(userRef,{password:password});
+    if(!username||!password){ msg.textContent="Enter username & password"; return;}
+    const usersCol = collection(db,"users");
+    const snapshot = await getDocs(usersCol);
+    let exists=false;
+    snapshot.forEach(doc=>{if(doc.id===username) exists=true;});
+    if(exists){ msg.textContent="Username exists"; return;}
+    await setDoc(doc(db,"users",username), {password:password});
     msg.textContent="Registered! You can login now.";
 };
 
@@ -264,10 +144,11 @@ window.login = async function(){
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;
     const msg = document.getElementById("loginMsg");
-    if(!username || !password){ msg.textContent="Enter username & password"; return; }
-    const userRef = doc(db,"users",username);
-    const userSnap = await getDoc(userRef);
-    if(!userSnap.exists() || userSnap.data().password !== password){ msg.textContent="Invalid username or password"; return; }
+    if(!username||!password){ msg.textContent="Enter username & password"; return;}
+    const userDoc = await getDocs(collection(db,"users"));
+    let userFound=false;
+    userDoc.forEach(d=>{if(d.id===username && d.data().password===password) userFound=true;});
+    if(!userFound){ msg.textContent="Invalid username or password"; return;}
     currentUser=username;
     document.getElementById("loginModal").style.display="none";
     document.getElementById("mainContainer").style.display="block";
@@ -276,7 +157,7 @@ window.login = async function(){
 
 // Save timesheet
 window.saveTimesheet = async function(){
-    if(!currentUser){ alert("Not logged in"); return; }
+    if(!currentUser){ alert("Not logged in"); return;}
     const rows=document.querySelectorAll("#tableBody tr");
     let data=[];
     rows.forEach(row=>{
@@ -305,7 +186,7 @@ window.loadTimesheet = async function(){
     const snapshot = await getDocs(q);
     if(!snapshot.empty){
         const docData = snapshot.docs[0].data();
-        document.getElementById("targetHours").value = docData.targetHours;
+        document.getElementById("targetHours").value=docData.targetHours;
         document.getElementById("tableBody").innerHTML="";
         docData.rows.forEach(r=>addRow(r));
     }
