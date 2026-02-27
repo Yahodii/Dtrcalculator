@@ -23,6 +23,7 @@ input.time-input{width:70px; padding:4px; text-align:center;}
 #loginModalContent input, #registerModal input{display:block; margin:10px auto; padding:8px; width:90%;}
 .logout-btn{background:#f44336;margin-left:10px;}
 .logout-btn:hover{background:#d32f2f;}
+#welcomeMsg{font-size:18px; font-weight:bold; text-align:center; margin-bottom:15px;}
 </style>
 </head>
 <body>
@@ -53,7 +54,7 @@ input.time-input{width:70px; padding:4px; text-align:center;}
 
 <!-- Main Timesheet -->
 <div class="container" id="mainContainer" style="display:none;">
-<h2>📅 Simple Timesheet Tracker</h2>
+<h2 id="welcomeMsg">Welcome, User</h2>
 
 <div class="summary">
     <div class="card">
@@ -161,6 +162,7 @@ window.login = async function(){
     currentUser=username;
     document.getElementById("loginModal").style.display="none";
     document.getElementById("mainContainer").style.display="block";
+    document.getElementById("welcomeMsg").textContent = `Welcome, ${currentUser}`;
     loadTimesheet();
 };
 
