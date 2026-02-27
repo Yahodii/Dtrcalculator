@@ -18,24 +18,36 @@ th,td{padding:8px; text-align:center; border:1px solid #ddd;}
 button{margin-top:15px; padding:8px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer;}
 button:hover{background:#45a049;}
 input.time-input{width:70px; padding:4px; text-align:center;}
-#loginModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;}
-#loginModalContent{background:white;padding:30px;border-radius:10px;text-align:center;}
-#loginModalContent input{display:block;margin:10px auto;padding:8px;width:80%;}
+#loginModal, #registerModal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center;}
+#loginModalContent, #registerModal div {background:white; padding:30px; border-radius:10px; text-align:center;}
+#loginModalContent input, #registerModal input{display:block; margin:10px auto; padding:8px; width:80%;}
 .logout-btn{background:#f44336;margin-left:10px;}
 .logout-btn:hover{background:#d32f2f;}
 </style>
 </head>
 <body>
 
-<!-- Login / Register Modal -->
+<!-- Login Modal -->
 <div id="loginModal">
   <div id="loginModalContent">
-    <h2>Login / Register</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
+    <h2>Login</h2>
+    <input type="text" id="loginUsername" placeholder="Username">
+    <input type="password" id="loginPassword" placeholder="Password">
     <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
+    <button onclick="showRegister()">Register</button>
     <p id="loginMsg"></p>
+  </div>
+</div>
+
+<!-- Registration Modal -->
+<div id="registerModal" style="display:none;">
+  <div>
+    <h2>Register</h2>
+    <input type="text" id="registerUsername" placeholder="Username">
+    <input type="password" id="registerPassword" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <button onclick="closeRegister()" style="background:#f44336;">Cancel</button>
+    <p id="registerMsg"></p>
   </div>
 </div>
 
@@ -94,52 +106,17 @@ function addRow(data={}){ const tableBody=document.getElementById("tableBody"); 
 <td><input type="time" class="time-input" value="${data.afternoonOut||''}"></td>
 <td class="total-cell">0:00</td>`; row.querySelectorAll(".time-input").forEach(input=>{input.addEventListener("input",()=>calculateRow(row));}); tableBody.appendChild(row); calculateRow(row);}
 addRow();
-
-// Make target hours input update remaining hours immediately
 document.getElementById("targetHours").addEventListener("input", updateSummary);
+function logout(){ currentUser=null; document.getElementById("loginModal").style.display="flex"; document.getElementById("mainContainer").style.display="none"; }
 
-// Logout function
-function logout(){
-    currentUser=null;
-    document.getElementById("loginModal").style.display="flex";
-    document.getElementById("mainContainer").style.display="none";
-}
-  // Show registration modal
-function showRegister(){
-    document.getElementById("registerModal").style.display = "flex";
-}
-
-// Close registration modal
-function closeRegister(){
-    document.getElementById("registerModal").style.display = "none";
-}
-
-// Updated register function for modal
-window.register = async function(){
-    const username = document.getElementById("registerUsername").value.trim();
-    const password = document.getElementById("registerPassword").value;
-    const msg = document.getElementById("registerMsg");
-    if(!username || !password){ msg.textContent="Enter username & password"; return; }
-
-    const usersCol = collection(db,"users");
-    const snapshot = await getDocs(usersCol);
-    let exists=false;
-    snapshot.forEach(doc=>{ if(doc.id === username) exists = true; });
-    if(exists){ msg.textContent="Username exists"; return; }
-
-    await setDoc(doc(db,"users",username), {password:password});
-    msg.textContent="Registered! You can now login.";
-
-    // Clear inputs and close modal after successful registration
-    document.getElementById("registerUsername").value = "";
-    document.getElementById("registerPassword").value = "";
-    setTimeout(closeRegister, 1000);
-};
+// Show/Close Register Modal
+function showRegister(){ document.getElementById("registerModal").style.display="flex"; }
+function closeRegister(){ document.getElementById("registerModal").style.display="none"; }
 </script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, getdoc, query, orderBy, limit, setDoc } 
+import { getFirestore, collection, addDoc, getDocs, doc, query, orderBy, limit, setDoc } 
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -157,9 +134,9 @@ let currentUser=null;
 
 // Register
 window.register = async function(){
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
-    const msg = document.getElementById("loginMsg");
+    const username = document.getElementById("registerUsername").value.trim();
+    const password = document.getElementById("registerPassword").value;
+    const msg = document.getElementById("registerMsg");
     if(!username||!password){ msg.textContent="Enter username & password"; return;}
     const usersCol = collection(db,"users");
     const snapshot = await getDocs(usersCol);
@@ -167,13 +144,16 @@ window.register = async function(){
     snapshot.forEach(doc=>{if(doc.id===username) exists=true;});
     if(exists){ msg.textContent="Username exists"; return;}
     await setDoc(doc(db,"users",username), {password:password});
-    msg.textContent="Registered! You can login now.";
+    msg.textContent="Registered! You can now login.";
+    document.getElementById("registerUsername").value="";
+    document.getElementById("registerPassword").value="";
+    setTimeout(closeRegister, 1000);
 };
 
 // Login
 window.login = async function(){
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
     const msg = document.getElementById("loginMsg");
     if(!username||!password){ msg.textContent="Enter username & password"; return;}
     const userDoc = await getDocs(collection(db,"users"));
@@ -225,4 +205,3 @@ window.loadTimesheet = async function(){
 </script>
 </body>
 </html>
-
