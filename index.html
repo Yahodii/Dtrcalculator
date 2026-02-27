@@ -104,6 +104,37 @@ function logout(){
     document.getElementById("loginModal").style.display="flex";
     document.getElementById("mainContainer").style.display="none";
 }
+  // Show registration modal
+function showRegister(){
+    document.getElementById("registerModal").style.display = "flex";
+}
+
+// Close registration modal
+function closeRegister(){
+    document.getElementById("registerModal").style.display = "none";
+}
+
+// Updated register function for modal
+window.register = async function(){
+    const username = document.getElementById("registerUsername").value.trim();
+    const password = document.getElementById("registerPassword").value;
+    const msg = document.getElementById("registerMsg");
+    if(!username || !password){ msg.textContent="Enter username & password"; return; }
+
+    const usersCol = collection(db,"users");
+    const snapshot = await getDocs(usersCol);
+    let exists=false;
+    snapshot.forEach(doc=>{ if(doc.id === username) exists = true; });
+    if(exists){ msg.textContent="Username exists"; return; }
+
+    await setDoc(doc(db,"users",username), {password:password});
+    msg.textContent="Registered! You can now login.";
+
+    // Clear inputs and close modal after successful registration
+    document.getElementById("registerUsername").value = "";
+    document.getElementById("registerPassword").value = "";
+    setTimeout(closeRegister, 1000);
+};
 </script>
 
 <script type="module">
@@ -194,3 +225,4 @@ window.loadTimesheet = async function(){
 </script>
 </body>
 </html>
+
