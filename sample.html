@@ -17,8 +17,6 @@ th,td{padding:8px; text-align:center; border:1px solid #ddd;}
 .total-cell{font-weight:bold; background:#fff4cc;}
 button{margin-top:15px; padding:8px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer;}
 button:hover{background:#45a049;}
-.set-btn{background:#2196F3; margin-top:8px;}
-.set-btn:hover{background:#1e88e5;}
 input.time-input{width:70px; padding:4px; text-align:center;}
 #loginModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;}
 #loginModalContent{background:white;padding:30px;border-radius:10px;text-align:center;}
@@ -51,7 +49,6 @@ input.time-input{width:70px; padding:4px; text-align:center;}
         <div>
             <input type="number" id="targetHours" value="300" min="1" step="0.01">
         </div>
-        <button class="set-btn" onclick="setTargetToRemaining()">Set to Remaining</button>
         <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
@@ -97,15 +94,6 @@ function addRow(data={}){ const tableBody=document.getElementById("tableBody"); 
 <td><input type="time" class="time-input" value="${data.afternoonOut||''}"></td>
 <td class="total-cell">0:00</td>`; row.querySelectorAll(".time-input").forEach(input=>{input.addEventListener("input",()=>calculateRow(row));}); tableBody.appendChild(row); calculateRow(row);}
 addRow();
-
-// Set target hours to remaining
-function setTargetToRemaining(){
-    const remainingText = document.getElementById("remainingHours").textContent;
-    const [h,m]=remainingText.split(":").map(Number);
-    const remainingMinutes = h*60 + m;
-    document.getElementById("targetHours").value = (remainingMinutes/60).toFixed(2);
-    updateSummary();
-}
 
 // Make target hours input update remaining hours immediately
 document.getElementById("targetHours").addEventListener("input", updateSummary);
