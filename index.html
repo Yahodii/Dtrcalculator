@@ -19,8 +19,8 @@ button{margin-top:15px; padding:8px 15px; border:none; background:#4CAF50; color
 button:hover{background:#45a049;}
 input.time-input{width:70px; padding:4px; text-align:center;}
 #loginModal, #registerModal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center;}
-#loginModalContent, #registerModal div {background:white; padding:30px; border-radius:10px; text-align:center;}
-#loginModalContent input, #registerModal input{display:block; margin:10px auto; padding:8px; width:80%;}
+.modalContent {background:white; padding:30px; border-radius:10px; text-align:center; width:320px;}
+#loginModalContent input, #registerModal input{display:block; margin:10px auto; padding:8px; width:90%;}
 .logout-btn{background:#f44336;margin-left:10px;}
 .logout-btn:hover{background:#d32f2f;}
 </style>
@@ -29,7 +29,7 @@ input.time-input{width:70px; padding:4px; text-align:center;}
 
 <!-- Login Modal -->
 <div id="loginModal">
-  <div id="loginModalContent">
+  <div class="modalContent" id="loginModalContent">
     <h2>Login</h2>
     <input type="text" id="loginUsername" placeholder="Username">
     <input type="password" id="loginPassword" placeholder="Password">
@@ -41,7 +41,7 @@ input.time-input{width:70px; padding:4px; text-align:center;}
 
 <!-- Registration Modal -->
 <div id="registerModal" style="display:none;">
-  <div>
+  <div class="modalContent">
     <h2>Register</h2>
     <input type="text" id="registerUsername" placeholder="Username">
     <input type="password" id="registerPassword" placeholder="Password">
@@ -108,8 +108,6 @@ function addRow(data={}){ const tableBody=document.getElementById("tableBody"); 
 addRow();
 document.getElementById("targetHours").addEventListener("input", updateSummary);
 function logout(){ currentUser=null; document.getElementById("loginModal").style.display="flex"; document.getElementById("mainContainer").style.display="none"; }
-
-// Show/Close Register Modal
 function showRegister(){ document.getElementById("registerModal").style.display="flex"; }
 function closeRegister(){ document.getElementById("registerModal").style.display="none"; }
 </script>
