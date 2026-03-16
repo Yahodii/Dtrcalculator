@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>STI OJT Timesheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <img class="logo" src="sti-logo.jpg" alt="STI Logo">
+    <b>STI OJT Program</b>
+  </div>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal">
+  <div class="modalContent">
+    <h2>Login</h2>
+    <input type="text" id="loginUsername" placeholder="Username">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="showRegister()">Register</button>
+    <p id="loginMsg"></p>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<!-- REGISTER MODAL -->
+<div id="registerModal" style="display:none;">
+  <div class="modalContent">
+    <h2>Register</h2>
+    <input type="text" id="registerFullName" placeholder="Full Name">
+    <input type="text" id="registerCourse" placeholder="Course">
+    <input type="text" id="registerSchool" placeholder="School">
+    <input type="text" id="registerUsername" placeholder="Username">
+    <input type="password" id="registerPassword" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <button onclick="closeRegister()" style="background:#f44336;">Cancel</button>
+    <p id="registerMsg"></p>
+  </div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div class="container" id="mainContainer" style="display:none;">
+  <h2 id="welcomeMsg">Welcome, User</h2>
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary">
+      <div class="card">
+          Target Hours
+          <input type="number" id="targetHours" value="300" min="1" step="0.01">
+      </div>
+
+      <div class="card">
+          Total Hours
+          <div class="big" id="totalHours">0:00</div>
+      </div>
+
+      <div class="card">
+          Remaining Hours
+          <div class="big" id="remainingHours">300:00</div>
+      </div>
+  </div>
+
+  <!-- OJT Progress Bar -->
+  <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <p id="progressText"></p>
+
+  <!-- TIMESHEET TABLE -->
+  <div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Morning In</th>
+        <th>Morning Out</th>
+        <th>Afternoon In</th>
+        <th>Afternoon Out</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+      <button onclick="addRow()">+ Add Day</button>
+      <button onclick="saveTimesheet()">💾 Save Online</button>
+      <button onclick="exportPDF()">📄 Export PDF</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
